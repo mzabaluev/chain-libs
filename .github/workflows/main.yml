@@ -71,10 +71,10 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         toolchain: [stable]
         mode: ['', '--release']
-        include: []
-          # Temporarily disabled due to https://github.com/rust-lang/cargo/issues/8351
-          # - os: ubuntu-latest
-          #   toolchain: nightly
+        include:
+          - os: ubuntu-latest
+            toolchain: nightly
+            experimental: true
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     env:
@@ -117,21 +117,21 @@ jobs:
 
       - name: Build
         uses: actions-rs/cargo@v1
-        continue-on-error: false
+        continue-on-error: ${{ matrix.experimental }}
         with:
           command: build
           args: --all-targets ${{ matrix.mode }} --locked
 
       - name: Run tests
         uses: actions-rs/cargo@v1
-        continue-on-error: false
+        continue-on-error: ${{ matrix.experimental }}
         with:
           command: test
           args: ${{ matrix.mode }} --locked
 
       - name: Test chain-network without default features
         uses: actions-rs/cargo@v1
-        continue-on-error: false
+        continue-on-error: ${{ matrix.experimental }}
         env:
           RUSTFLAGS: -D warnings
         with:
